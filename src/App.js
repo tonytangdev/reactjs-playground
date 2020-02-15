@@ -1,24 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useReducer, useRef } from 'react';
+import Counter from "./components/counter";
+import reducer from "./reducers"
+import ActionButtons from './components/action-buttons';
+import { INCREMENT, DECREMENT, RESET } from './reducers/actions';
+
 import './App.css';
 
+function initCounter({ count }) {
+  return { count: count };
+}
+
 function App() {
+
+  const [boysState, boysDispatch] = useReducer(reducer, { count: 0 }, initCounter)
+  const [girlsState, girlsDispatch] = useReducer(reducer, { count: 0 }, initCounter)
+
+  const buttonInc = useRef(null);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <div>
+        Boys : <Counter count={boysState.count} />
+        <ActionButtons
+          ref={buttonInc}
+          onIncrement={() => boysDispatch({ type: INCREMENT })}
+          onDecrement={() => boysDispatch({ type: DECREMENT })}
+          onReset={() => {
+            boysDispatch({ type: RESET });
+            buttonInc.current.style.backgroundColor = "red";
+          }}
+        />
+      </div>
+      <div>
+        Girls : <Counter count={girlsState.count} />
+        <ActionButtons
+          count={girlsState.count}
+          onIncrement={() => girlsDispatch({ type: INCREMENT })}
+          onDecrement={() => girlsDispatch({ type: DECREMENT })}
+          onReset={() => girlsDispatch({ type: RESET })}
+        />
+      </div>
     </div>
   );
 }
